@@ -1,60 +1,60 @@
 
 FROM multiarch/debian-debootstrap:armhf-buster as dump1090
 
-ENV DUMP1090_VERSION v3.8.0
+ENV DUMP1090_VERSION v3.8.1
 
 # DUMP1090
 RUN apt-get update && \
-    apt-get install -y \
-    sudo \
-    git-core \
-    build-essential \
-    debhelper \
-    librtlsdr-dev \
-    pkg-config \
-    dh-systemd \
-    libncurses5-dev \
-    libbladerf-dev && \
-    rm -rf /var/lib/apt/lists/*
+	apt-get install -y \
+	sudo \
+	git-core \
+	build-essential \
+	debhelper \
+	librtlsdr-dev \
+	pkg-config \
+	dh-systemd \
+	libncurses5-dev \
+	libbladerf-dev && \
+	rm -rf /var/lib/apt/lists/*
 
 WORKDIR /tmp
 RUN git clone -b ${DUMP1090_VERSION} --depth 1 https://github.com/flightaware/dump1090 && \
-    cd dump1090 && \
-    make
+	cd dump1090 && \
+	make
 
 FROM multiarch/debian-debootstrap:armhf-buster as piaware
 
 ENV DEBIAN_VERSION buster
-ENV PIAWARE_VERSION v3.8.0
+ENV PIAWARE_VERSION v3.8.1
 
 # PIAWARE
 WORKDIR /tmp
 RUN apt-get update && \
-    apt-get install -y \
-    sudo \
-    git-core \
-    wget \
-    build-essential \
-    debhelper \
-    tcl8.6-dev \
-    autoconf \
-    python3-dev \
-    python-virtualenv \
-    libz-dev \
-    dh-systemd \
-    net-tools \
-    tclx8.4 \
-    tcllib \
-    tcl-tls \
-    itcl3 \
-    python3-venv \
-    dh-systemd \
-    init-system-helpers \
-    libboost-system-dev \
-    libboost-program-options-dev \
-    libboost-regex-dev \
-    libboost-filesystem-dev && \
-    rm -rf /var/lib/apt/lists/*
+	apt-get install -y \
+	sudo \
+	git-core \
+	wget \
+	build-essential \
+	debhelper \
+	tcl8.6-dev \
+	autoconf \
+	python3-dev \
+	python-virtualenv \
+	libz-dev \
+	dh-systemd \
+	net-tools \
+	tclx8.4 \
+	tcllib \
+	tcl-tls \
+	itcl3 \
+	python3-venv \
+	dh-systemd \
+	init-system-helpers \
+	libboost-system-dev \
+	libboost-program-options-dev \
+	libboost-regex-dev \
+	libboost-filesystem-dev && \
+	rm -rf /var/lib/apt/lists/*
 
 RUN git clone -b ${PIAWARE_VERSION} --depth 1 https://github.com/flightaware/piaware_builder.git piaware_builder
 WORKDIR /tmp/piaware_builder
@@ -64,20 +64,26 @@ RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
 
 FROM multiarch/debian-debootstrap:armhf-buster as confd
 
-ENV CONFD_VERSION 0.16.0
+ENV CONFD_VERSION v0.16.0
 
 # CONFD
 WORKDIR /tmp
 RUN apt-get update && \
-    apt-get install -y \
-    sudo \
-    git-core \
-    build-essential \
-    rm -rf /var/lib/apt/lists/*
+	apt-get install -y \
+	sudo \
+	git-core \
+	build-essential \
+  golang \
+	rm -rf /var/lib/apt/lists/*
 
 RUN git clone -b ${CONFD_VERSION} --depth 1 https://github.com/kelseyhightower/confd.git && \
-    cd confd && \
-    make
+	cd confd && \
+  export GOPATH=~/go && \
+  go get github.com/BurntSushi/toml && \
+  go get github.com/kelseyhightower/confd/backends && \
+  go get github.com/kelseyhightower/confd/log && \
+  go get github.com/kelseyhightower/confd/resource/template && \
+	make
 
 FROM multiarch/debian-debootstrap:armhf-buster-slim as serve
 
@@ -87,21 +93,21 @@ ENV FR24FEED_VERSION 1.0.25-1
 MAINTAINER reiser.thomas@gmail.com
 
 RUN apt-get update && \
-    # rtl-sdr
-    apt-get install -y \
-    wget \
-    devscripts \
-    libusb-1.0-0-dev \
-    pkg-config \
-    ca-certificates \
-    git-core \
-    cmake \
-    build-essential \
-    # piaware
-    libboost-system-dev \
-    libboost-program-options-dev \
-    libboost-regex-dev \
-    libboost-filesystem-dev \
+	# rtl-sdr
+	apt-get install -y \
+	wget \
+	devscripts \
+	libusb-1.0-0-dev \
+	pkg-config \
+	ca-certificates \
+	git-core \
+	cmake \
+	build-essential \
+	# piaware
+	libboost-system-dev \
+	libboost-program-options-dev \
+	libboost-regex-dev \
+	libboost-filesystem-dev \
 	libtcl \
 	net-tools \
 	tclx \
@@ -110,26 +116,26 @@ RUN apt-get update && \
 	tcl-tls \
 	itcl3 \
 	librtlsdr-dev \
-    pkg-config \
-    libncurses5-dev \
-    libbladerf-dev && \
-    rm -rf /var/lib/apt/lists/*
+	pkg-config \
+	libncurses5-dev \
+	libbladerf-dev && \
+	rm -rf /var/lib/apt/lists/*
 
 # RTL-SDR
 WORKDIR /tmp
 RUN mkdir -p /etc/modprobe.d && \
-    echo 'blacklist r820t' >> /etc/modprobe.d/raspi-blacklist.conf && \
+	echo 'blacklist r820t' >> /etc/modprobe.d/raspi-blacklist.conf && \
 	echo 'blacklist rtl2832' >> /etc/modprobe.d/raspi-blacklist.conf && \
 	echo 'blacklist rtl2830' >> /etc/modprobe.d/raspi-blacklist.conf && \
 	echo 'blacklist dvb_usb_rtl28xxu' >> /etc/modprobe.d/raspi-blacklist.conf && \
-    git clone -b ${RTL_SDR_VERSION} --depth 1 https://github.com/osmocom/rtl-sdr.git && \
-    mkdir rtl-sdr/build && \
-    cd rtl-sdr/build && \
-    cmake ../ -DINSTALL_UDEV_RULES=ON -DDETACH_KERNEL_DRIVER=ON && \
-    make && \
-    make install && \
-    ldconfig && \
-    rm -rf /tmp/rtl-sdr
+	git clone -b ${RTL_SDR_VERSION} --depth 1 https://github.com/osmocom/rtl-sdr.git && \
+	mkdir rtl-sdr/build && \
+	cd rtl-sdr/build && \
+	cmake ../ -DINSTALL_UDEV_RULES=ON -DDETACH_KERNEL_DRIVER=ON && \
+	make && \
+	make install && \
+	ldconfig && \
+	rm -rf /tmp/rtl-sdr
 
 # DUMP1090
 RUN mkdir -p /usr/lib/fr24/public_html/data
@@ -142,7 +148,7 @@ COPY --from=piaware /tmp/piaware_builder /tmp/piaware_builder
 RUN cd /tmp/piaware_builder && dpkg -i piaware_*_*.deb && rm -rf /tmp/piaware && rm /etc/piaware.conf
 
 # CONFD
-COPY --from=confd /tmp/confd/confd /opt/confd/bin/confd
+COPY --from=confd /tmp/confd/bin/confd /opt/confd/bin/confd
 
 # FR24FEED
 WORKDIR /fr24feed
