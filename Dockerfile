@@ -1,7 +1,7 @@
 
 FROM multiarch/debian-debootstrap:armhf-buster as dump1090
 
-ENV DUMP1090_VERSION v3.8.1
+ENV DUMP1090_VERSION v3.8.0
 
 # DUMP1090
 RUN apt-get update && \
@@ -25,7 +25,7 @@ RUN git clone -b ${DUMP1090_VERSION} --depth 1 https://github.com/flightaware/du
 FROM multiarch/debian-debootstrap:armhf-buster as piaware
 
 ENV DEBIAN_VERSION buster
-ENV PIAWARE_VERSION v3.8.1
+ENV PIAWARE_VERSION v3.8.0
 
 # PIAWARE
 WORKDIR /tmp
