@@ -1,4 +1,4 @@
-##!/usr/bin/with-contenv bash
+#!/usr/bin/with-contenv bash
 if [ "$SERVICE_ENABLE_FR24FEED" != "false" ]
 then
 	/fr24feed/fr24feed_armhf/fr24feed
