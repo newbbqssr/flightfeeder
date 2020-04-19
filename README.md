@@ -1,12 +1,6 @@
-# Fr24feed and FlightAware with dump1090 as a Docker image
+# Fr24feed and FlightAware with dump1090 as a Docker image for Raspberry Pi
 
-[![Build Status](https://travis-ci.org/Thom-x/docker-fr24feed-piaware-dump1090.svg?branch=master)](https://travis-ci.org/Thom-x/docker-fr24feed-piaware-dump1090)
-![](https://images.microbadger.com/badges/image/thomx/fr24feed-piaware.svg)
-![](https://images.microbadger.com/badges/version/thomx/fr24feed-piaware.svg)
-![GitHub](https://img.shields.io/github/license/Thom-x/docker-fr24feed-piaware-dump1090)
-![GitHub issues](https://img.shields.io/github/issues/Thom-x/docker-fr24feed-piaware-dump1090)
-
-> Please consider following this project's author, [Thom-x](https://github.com/Thom-x), and consider starring the project to show your ❤️ and support.
+> Please consider following this project's original (x86_64) author, [Thom-x](https://github.com/Thom-x), and consider starring the project to show your ❤️ and support.
 
 Docker image of Fr24feed, FlightAware and dump1090.
 

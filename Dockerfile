@@ -62,6 +62,23 @@ RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
 	cd package-${DEBIAN_VERSION} && \
 	dpkg-buildpackage -b
 
+FROM multiarch/debian-debootstrap:armhf-buster as confd
+
+ENV CONFD_VERSION 0.16.0
+
+# CONFD
+WORKDIR /tmp
+RUN apt-get update && \
+    apt-get install -y \
+    sudo \
+    git-core \
+    build-essential \
+    rm -rf /var/lib/apt/lists/*
+
+RUN git clone -b ${CONFD_VERSION} --depth 1 https://github.com/kelseyhightower/confd.git && \
+    cd confd && \
+    make
+
 FROM multiarch/debian-debootstrap:armhf-buster-slim as serve
 
 ENV RTL_SDR_VERSION 0.6.0
@@ -124,16 +141,13 @@ RUN rm /usr/lib/fr24/public_html/config.js
 COPY --from=piaware /tmp/piaware_builder /tmp/piaware_builder
 RUN cd /tmp/piaware_builder && dpkg -i piaware_*_*.deb && rm -rf /tmp/piaware && rm /etc/piaware.conf
 
+# CONFD
+COPY --from=confd /tmp/confd/confd /opt/confd/bin/confd
+
 # FR24FEED
 WORKDIR /fr24feed
 ADD https://repo-feed.flightradar24.com/rpi_binaries/fr24feed_${FR24FEED_VERSION}_armhf.tgz /fr24feed
 RUN tar -xzf *armhf.tgz && rm *armhf.tgz
-
-# CONFD
-ADD https://github.com/kelseyhightower/confd/releases/download/v0.16.0/confd-0.16.0-linux-arm64 /tmp/
-RUN mkdir -p /opt/confd/bin && \
-    mv /tmp/confd-0.16.0-linux-arm64 /opt/confd/bin/confd && \
-    chmod +x /opt/confd/bin/confd
 
 # S6 OVERLAY
 ADD https://github.com/just-containers/s6-overlay/releases/download/v1.21.8.0/s6-overlay-armhf.tar.gz /tmp/
