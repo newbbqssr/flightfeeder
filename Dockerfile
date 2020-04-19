@@ -73,7 +73,7 @@ RUN apt-get update && \
 	sudo \
 	git-core \
 	build-essential \
-  golang \
+  golang && \
 	rm -rf /var/lib/apt/lists/*
 
 RUN git clone -b ${CONFD_VERSION} --depth 1 https://github.com/kelseyhightower/confd.git && \
