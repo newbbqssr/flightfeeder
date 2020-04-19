@@ -1,4 +1,5 @@
-FROM debian:buster as dump1090
+
+FROM multiarch/debian-debootstrap:armhf-buster as dump1090
 
 ENV DUMP1090_VERSION v3.8.0
 
@@ -21,7 +22,7 @@ RUN git clone -b ${DUMP1090_VERSION} --depth 1 https://github.com/flightaware/du
     cd dump1090 && \
     make
 
-FROM debian:buster as piaware
+FROM multiarch/debian-debootstrap:armhf-buster as piaware
 
 ENV DEBIAN_VERSION buster
 ENV PIAWARE_VERSION v3.8.0
@@ -61,15 +62,15 @@ RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
 	cd package-${DEBIAN_VERSION} && \
 	dpkg-buildpackage -b
 
-FROM debian:buster-slim as serve
+FROM multiarch/debian-debootstrap:armhf-buster-slim as serve
 
 ENV RTL_SDR_VERSION 0.6.0
-ENV FR24FEED_VERSION 1.0.18-5
+ENV FR24FEED_VERSION 1.0.25-1
 
-MAINTAINER maugin.thomas@gmail.com
+MAINTAINER reiser.thomas@gmail.com
 
 RUN apt-get update && \
-	# rtl-sdr
+    # rtl-sdr
     apt-get install -y \
     wget \
     devscripts \
@@ -125,18 +126,18 @@ RUN cd /tmp/piaware_builder && dpkg -i piaware_*_*.deb && rm -rf /tmp/piaware &&
 
 # FR24FEED
 WORKDIR /fr24feed
-ADD https://repo-feed.flightradar24.com/linux_x86_64_binaries/fr24feed_${FR24FEED_VERSION}_amd64.tgz /fr24feed
-RUN tar -xzf *amd64.tgz && rm *amd64.tgz
+ADD https://repo-feed.flightradar24.com/rpi_binaries/fr24feed_${FR24FEED_VERSION}_armhf.tgz /fr24feed
+RUN tar -xzf *armhf.tgz && rm *armhf.tgz
 
 # CONFD
-ADD https://github.com/kelseyhightower/confd/releases/download/v0.16.0/confd-0.16.0-linux-amd64 /tmp/
+ADD https://github.com/kelseyhightower/confd/releases/download/v0.16.0/confd-0.16.0-linux-arm64 /tmp/
 RUN mkdir -p /opt/confd/bin && \
-    mv /tmp/confd-0.16.0-linux-amd64 /opt/confd/bin/confd && \
+    mv /tmp/confd-0.16.0-linux-arm64 /opt/confd/bin/confd && \
     chmod +x /opt/confd/bin/confd
 
 # S6 OVERLAY
-ADD https://github.com/just-containers/s6-overlay/releases/download/v1.21.8.0/s6-overlay-amd64.tar.gz /tmp/
-RUN tar xzf /tmp/s6-overlay-amd64.tar.gz -C / && rm /tmp/s6-overlay-amd64.tar.gz
+ADD https://github.com/just-containers/s6-overlay/releases/download/v1.21.8.0/s6-overlay-armhf.tar.gz /tmp/
+RUN tar xzf /tmp/s6-overlay-armhf.tar.gz -C / && rm /tmp/s6-overlay-armhf.tar.gz
 COPY /root /
 
 EXPOSE 8754 8080 30001 30002 30003 30004 30005 30104 
