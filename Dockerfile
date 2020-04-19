@@ -78,7 +78,7 @@ RUN apt-get update && \
 
 RUN git clone -b ${CONFD_VERSION} --depth 1 https://github.com/kelseyhightower/confd.git && \
 	cd confd && \
-  export GOPATH=go && \
+  export GOPATH=/tmp/go && \
   go get github.com/BurntSushi/toml && \
   go get github.com/kelseyhightower/confd/backends && \
   go get github.com/kelseyhightower/confd/log && \
