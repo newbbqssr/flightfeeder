@@ -220,7 +220,7 @@ RUN wget -U "Debian APT-HTTP/1.3" https://apt.rb24.com/pool/main/r/rbfeeder/rbfe
 	rm -r lib/ && \
 	rm -r etc/ && \
 	cp usr/bin/* . && \
-	cp usr/share/doc/* . && \
+	cp -r usr/share/doc/* . && \
 	rm -r usr/
 
 # S6 OVERLAY
