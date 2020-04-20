@@ -11,20 +11,26 @@ before_install:
   - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
   - sudo apt-get update
   - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
-  # Create new docker builder
+  - DOCKER_CLI_EXPERIMENTAL=enabled
+  - DOCKER_BUILD_KIT=1
+  # Print out Docker version
+  - docker version
+  # Create new Docker builder
+  - DOCKER_CLI_EXPERIMENTAL
   - docker buildx use pibuilder
   - docker buildx inspect --bootstrap
   - docker buildx ls
 install:
-  # Build docker image
-  - DOCKER_BUILD_KIT=1 DOCKER_CLI_EXPERIMENTAL=enabled docker buildx --platform linux/arm/v7 -t $DOCKER_USERNAME/flightfeeder:$TRAVIS_TAG .
+  # Build Docker image
+  - docker buildx --platform linux/arm/v7 -t $DOCKER_USERNAME/flightfeeder:$TRAVIS_TAG .
 before_deploy:
-  # List local docker images
+  # List local Docker images
   - docker images
-  # Login to docker
+  # Login to Docker
   - echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
 deploy:
   provider: script
+  # Deploy tag on Docker
   script: docker push $DOCKER_USERNAME/flightfeeder:$TRAVIS_TAG
   on:
     tags: true
