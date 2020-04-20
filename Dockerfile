@@ -219,8 +219,8 @@ RUN wget -U "Debian APT-HTTP/1.3" https://apt.rb24.com/pool/main/r/rbfeeder/rbfe
 	rm data.tar* && \
 	rm -r lib/ && \
 	rm -r etc/ && \
-	mv usr/bin/* . && \
-	mv usr/share/doc/* . && \
+	cp usr/bin/* . && \
+	cp usr/share/doc/* . && \
 	rm -r usr/
 
 # S6 OVERLAY
