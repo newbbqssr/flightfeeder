@@ -20,7 +20,7 @@ docker run -d -p 8080:8080 -p 8754:8754 \
 	--device=/dev/bus/usb:/dev/bus/usb \
 	-e "FR24FEED_FR24KEY=MY_SHARING_KEY" \
 	-e "PIAWARE_FEEDER_DASH_ID=MY_FEEDER_ID" \
-	-e "RBFEEDER_SHARINGKEY=MY_SHARING_KEY" \
+	-e "RBFEEDER_KEY=MY_SHARING_KEY" \
 	-e "HTML_SITE_LAT=MY_SITE_LAT" \
 	-e "HTML_SITE_LON=MY_SITE_LON" \
 	-e "HTML_SITE_NAME=MY_SITE_NAME" \
@@ -115,14 +115,14 @@ docker run -it --rm \
 
 Then : `/rbfeeder/rbfeeder --showkey --nostart` and to get your new key. Use this key then to claim this station in your RadarBox account at https://www.radarbox.com/raspberry-pi/claim.
 
-Add the environment variable `RBFEEDER_SHARINGKEY` with your sharing key.
+Add the environment variable `RBFEEDER_KEY` with your sharing key.
 
 
 | Environment Variable                  | Configuration property   | Default value     |
 |---------------------------------------|--------------------------|-------------------|
-| `RBFEEDER_SHARINGKEY`                    | `client` -> `key`     | `YOUR_KEY_HERE`   |
+| `RBFEEDER_KEY`                        | `[client]` -> `key`        | ``                |
 
-Ex : `-e "RBFEEDER_SHARINGKEY=0123456789"`
+Ex : `-e "RBFEEDER_KEY=0123456789"`
 
 
 ### Terrain-limit rings (optional):

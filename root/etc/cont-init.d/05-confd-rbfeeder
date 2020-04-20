@@ -9,7 +9,7 @@ default_value()
 	export $key
 }
 
-default_value "sharingkey" ""
+#default_value "key" ""
 
 if [ ! -f /etc/rbfeeder.ini ]; then
 	/opt/confd/bin/confd -onetime -confdir "/etc/confd/rbfeeder" -prefix "rbfeeder" -backend env
