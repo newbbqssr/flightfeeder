@@ -152,7 +152,7 @@ RUN apt-get update -y && \
     tcl-dev \
     chrpath \
 	# rbfeeder
-	libjannson4 \
+	libjansson4 \
 	libncurses5 \
 	libtinfo5 && \
 	rm -rf /var/lib/apt/lists/*
