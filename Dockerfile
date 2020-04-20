@@ -203,10 +203,10 @@ COPY --from=confd /tmp/confd/bin/confd /opt/confd/bin/confd
 # FR24FEED
 WORKDIR /fr24feed
 ADD https://repo-feed.flightradar24.com/rpi_binaries/fr24feed_${FR24FEED_VERSION}_armhf.tgz /fr24feed
-RUN tar -xzf frfeed24_*_armhf.tgz && \
-	mv frfeed24_armhf/* . && \
-	rm frfeed24_armhf/ && \
-	rm frfeed24_*_armhf.tgz.tgz
+RUN tar -xzf fr24feed_*_armhf.tgz && \
+	mv fr24feed_armhf/* . && \
+	rm fr24feed_armhf/ && \
+	rm fr24feed_*_armhf.tgz.tgz
 
 # RBFEEDER
 WORKDIR /rbfeeder
