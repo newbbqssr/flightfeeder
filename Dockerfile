@@ -121,7 +121,6 @@ ENV S6_OVERLAY_VERSION v1.22.1.0
 LABEL maintainer="reiser.thomas@gmail.com"
 
 RUN apt-get update -y && \
-    apt-get upgrade -y && \
 	# rtl-sdr
 	apt-get install -y \
 	wget \
