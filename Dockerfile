@@ -206,7 +206,7 @@ ADD https://repo-feed.flightradar24.com/rpi_binaries/fr24feed_${FR24FEED_VERSION
 RUN tar -xzf fr24feed_*_armhf.tgz && \
 	mv fr24feed_armhf/* . && \
 	rm -r fr24feed_armhf/ && \
-	rm fr24feed_*_armhf.tgz.tgz
+	rm fr24feed_*_armhf.tgz
 
 # RBFEEDER
 WORKDIR /rbfeeder
