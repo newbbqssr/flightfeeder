@@ -1,9 +1,12 @@
-
+##################################################################
+##
+## TEMPORARY DOCKER IMAGE TO BUILD DUMP1090
+##
+##################################################################
 FROM multiarch/debian-debootstrap:armhf-buster as dump1090
 
-ENV DUMP1090_VERSION v3.8.0
+ENV DUMP1090_VERSION v3.8.1
 
-# DUMP1090
 RUN apt-get update && \
 	apt-get install -y \
 	sudo \
@@ -22,12 +25,19 @@ RUN git clone -b ${DUMP1090_VERSION} --depth 1 https://github.com/flightaware/du
 	cd dump1090 && \
 	make
 
+
+
+
+##################################################################
+##
+## TEMPORARY DOCKER IMAGE TO BUILD PIAWARE
+##
+##################################################################
 FROM multiarch/debian-debootstrap:armhf-buster as piaware
 
 ENV DEBIAN_VERSION buster
-ENV PIAWARE_VERSION v3.8.0
+ENV PIAWARE_VERSION v3.8.1
 
-# PIAWARE
 WORKDIR /tmp
 RUN apt-get update && \
 	apt-get install -y \
@@ -62,11 +72,18 @@ RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
 	cd package-${DEBIAN_VERSION} && \
 	dpkg-buildpackage -b
 
+
+
+
+##################################################################
+##
+## TEMPORARY DOCKER IMAGE TO BUILD CONFD
+##
+##################################################################
 FROM multiarch/debian-debootstrap:armhf-buster as confd
 
 ENV CONFD_VERSION v0.16.0
 
-# CONFD
 WORKDIR /tmp
 RUN apt-get update && \
 	apt-get install -y \
@@ -85,10 +102,21 @@ RUN git clone -b ${CONFD_VERSION} --depth 1 https://github.com/kelseyhightower/c
   go get github.com/kelseyhightower/confd/resource/template && \
 	make
 
+
+
+
+##################################################################
+##
+## FINAL DOCKER IMAGE TO BE USED
+##
+##################################################################
 FROM multiarch/debian-debootstrap:armhf-buster-slim as serve
 
+ENV DEBIAN_VERSION buster
 ENV RTL_SDR_VERSION 0.6.0
 ENV FR24FEED_VERSION 1.0.25-1
+ENV RBFEEDER_VERSION 0.3.3-20200203195559
+ENV S6_OVERLAY_VERSION v1.22.1.0
 
 MAINTAINER reiser.thomas@gmail.com
 
@@ -119,6 +147,15 @@ RUN apt-get update && \
 	pkg-config \
 	libncurses5-dev \
 	libbladerf-dev && \
+	# tcl-tls
+	libssl-dev \
+    tcl-dev \
+    chrpath && \
+	# rbfeeder
+	libjannson4 && \
+	libncurses5 && \
+	libtinfo5 && \
+	systemd \
 	rm -rf /var/lib/apt/lists/*
 
 # RTL-SDR
@@ -137,6 +174,17 @@ RUN mkdir -p /etc/modprobe.d && \
 	ldconfig && \
 	rm -rf /tmp/rtl-sdr
 
+# TCL-TLS
+RUN cd /tmp && \
+    git clone --depth 1 http://github.com/flightaware/tcltls-rebuild.git && \
+    cd tcltls-rebuild && \
+    ./prepare-build.sh ${DEBIAN_VERSION} && \
+    cd package-${DEBIAN_VERSION} && \
+    dpkg-buildpackage -b --no-sign && \
+    cd ../ && \
+    dpkg -i tcl-tls_*.deb && \
+	rm tcl-tls_*.deb
+
 # DUMP1090
 RUN mkdir -p /usr/lib/fr24/public_html/data
 COPY --from=dump1090 /tmp/dump1090/dump1090 /usr/lib/fr24/
@@ -145,7 +193,10 @@ RUN rm /usr/lib/fr24/public_html/config.js
 
 # PIAWARE
 COPY --from=piaware /tmp/piaware_builder /tmp/piaware_builder
-RUN cd /tmp/piaware_builder && dpkg -i piaware_*_*.deb && rm -rf /tmp/piaware && rm /etc/piaware.conf
+RUN cd /tmp/piaware_builder && \
+	dpkg -i piaware_*_*.deb && \
+	rm -rf /tmp/piaware && \
+	rm /etc/piaware.conf
 
 # CONFD
 COPY --from=confd /tmp/confd/bin/confd /opt/confd/bin/confd
@@ -153,11 +204,19 @@ COPY --from=confd /tmp/confd/bin/confd /opt/confd/bin/confd
 # FR24FEED
 WORKDIR /fr24feed
 ADD https://repo-feed.flightradar24.com/rpi_binaries/fr24feed_${FR24FEED_VERSION}_armhf.tgz /fr24feed
-RUN tar -xzf *armhf.tgz && rm *armhf.tgz
+RUN tar -xzf frfeed24_*_armhf.tgz && \
+	rm frfeed24_*_armhf.tgz.tgz
+
+# RBFEEDER
+WORKDIR /rbfeeder
+ADD https://apt.rb24.com/pool/main/r/rbfeeder/rbfeeder_${RBFEEDER_VERSION}_armhf.deb /rbfeeder
+RUN dpkg -i rbfeeder_*_armhf.deb && \
+    rm rbfeeder_*_armhf.deb
 
 # S6 OVERLAY
-ADD https://github.com/just-containers/s6-overlay/releases/download/v1.21.8.0/s6-overlay-armhf.tar.gz /tmp/
-RUN tar xzf /tmp/s6-overlay-armhf.tar.gz -C / && rm /tmp/s6-overlay-armhf.tar.gz
+ADD https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-armhf.tar.gz /tmp/
+RUN tar xzf /tmp/s6-overlay-armhf.tar.gz -C / && \
+	rm /tmp/s6-overlay-armhf.tar.gz
 COPY /root /
 
 EXPOSE 8754 8080 30001 30002 30003 30004 30005 30104 
