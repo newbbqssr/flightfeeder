@@ -22,7 +22,7 @@ before_install:
   - docker buildx inspect --bootstrap
 install:
   # Build Docker image
-  - docker buildx --platform linux/arm/v7 -t $DOCKER_USERNAME/flightfeeder:$TRAVIS_TAG .
+  - docker buildx build --platform linux/arm/v7 -t $DOCKER_USERNAME/flightfeeder:$TRAVIS_TAG .
 before_deploy:
   # List local Docker images
   - docker images
