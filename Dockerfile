@@ -110,7 +110,7 @@ RUN git clone -b ${CONFD_VERSION} --depth 1 https://github.com/kelseyhightower/c
 ## FINAL DOCKER IMAGE TO BE USED
 ##
 ##################################################################
-FROM multiarch/debian-debootstrap:armhf-buster-slim as serve
+FROM multiarch/debian-debootstrap:armhf-buster as serve
 
 ENV DEBIAN_VERSION buster
 ENV RTL_SDR_VERSION 0.6.0
@@ -118,7 +118,7 @@ ENV FR24FEED_VERSION 1.0.25-1
 ENV RBFEEDER_VERSION 0.3.3-20200203195559
 ENV S6_OVERLAY_VERSION v1.22.1.0
 
-MAINTAINER reiser.thomas@gmail.com
+LABEL maintainer="reiser.thomas@gmail.com"
 
 RUN apt-get update && \
 	# rtl-sdr
