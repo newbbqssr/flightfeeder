@@ -155,7 +155,6 @@ RUN apt-get update && \
 	libjannson4 && \
 	libncurses5 && \
 	libtinfo5 && \
-	systemd \
 	rm -rf /var/lib/apt/lists/*
 
 # RTL-SDR
@@ -205,13 +204,24 @@ COPY --from=confd /tmp/confd/bin/confd /opt/confd/bin/confd
 WORKDIR /fr24feed
 ADD https://repo-feed.flightradar24.com/rpi_binaries/fr24feed_${FR24FEED_VERSION}_armhf.tgz /fr24feed
 RUN tar -xzf frfeed24_*_armhf.tgz && \
+	mv frfeed24_armhf/* . && \
+	rm frfeed24_armhf/ && \
 	rm frfeed24_*_armhf.tgz.tgz
 
 # RBFEEDER
 WORKDIR /rbfeeder
 ADD https://apt.rb24.com/pool/main/r/rbfeeder/rbfeeder_${RBFEEDER_VERSION}_armhf.deb /rbfeeder
 RUN dpkg -i rbfeeder_*_armhf.deb && \
-    rm rbfeeder_*_armhf.deb
+	rm rbfeeder_*_armhf.deb && \
+	rm control.tar* && \
+	rm debian-binary && \
+	tar -xf data.tar* && \
+	rm data.tar* && \
+	rm -r lib/ && \
+	rm -r etc/ && \
+	mv usr/bin/rbfeeder rbfeeder && \
+	mv usr/share/doc/* . && \
+	rm -r usr/
 
 # S6 OVERLAY
 ADD https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-armhf.tar.gz /tmp/
