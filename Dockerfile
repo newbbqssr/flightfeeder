@@ -147,14 +147,14 @@ RUN apt-get update -y && \
 	librtlsdr-dev \
 	pkg-config \
 	libncurses5-dev \
-	libbladerf-dev && \
+	libbladerf-dev \
 	# tcl-tls
 	libssl-dev \
     tcl-dev \
-    chrpath && \
+    chrpath \
 	# rbfeeder
-	libjannson4 && \
-	libncurses5 && \
+	libjannson4 \
+	libncurses5 \
 	libtinfo5 && \
 	rm -rf /var/lib/apt/lists/*
 
