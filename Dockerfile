@@ -7,7 +7,7 @@ FROM multiarch/debian-debootstrap:armhf-buster as dump1090
 
 ENV DUMP1090_VERSION v3.8.1
 
-RUN apt-get update && \
+RUN apt-get update -y && \
 	apt-get install -y \
 	sudo \
 	git-core \
@@ -39,7 +39,7 @@ ENV DEBIAN_VERSION buster
 ENV PIAWARE_VERSION v3.8.1
 
 WORKDIR /tmp
-RUN apt-get update && \
+RUN apt-get update -y && \
 	apt-get install -y \
 	sudo \
 	git-core \
@@ -85,7 +85,7 @@ FROM multiarch/debian-debootstrap:armhf-buster as confd
 ENV CONFD_VERSION v0.16.0
 
 WORKDIR /tmp
-RUN apt-get update && \
+RUN apt-get update -y && \
 	apt-get install -y \
 	sudo \
 	git-core \
@@ -110,7 +110,7 @@ RUN git clone -b ${CONFD_VERSION} --depth 1 https://github.com/kelseyhightower/c
 ## FINAL DOCKER IMAGE TO BE USED
 ##
 ##################################################################
-FROM multiarch/debian-debootstrap:armhf-buster as serve
+FROM multiarch/debian-debootstrap:armhf-buster-slim as serve
 
 ENV DEBIAN_VERSION buster
 ENV RTL_SDR_VERSION 0.6.0
@@ -120,7 +120,8 @@ ENV S6_OVERLAY_VERSION v1.22.1.0
 
 LABEL maintainer="reiser.thomas@gmail.com"
 
-RUN apt-get update && \
+RUN apt-get update -y && \
+    apt-get upgrade -y && \
 	# rtl-sdr
 	apt-get install -y \
 	wget \
