@@ -1,6 +1,6 @@
 os: linux
 dist: bionic
-language: minimal
+language: shell
 notifications:
   email: false
 git:
@@ -17,7 +17,7 @@ before_install:
   - docker buildx ls
 install:
   # Build docker image
-  - docker buildx --platform linux/arm/v7 -t $DOCKER_USERNAME/flightfeeder:${TRAVIS_TAG} .
+  - DOCKER_BUILD_KIT=1 DOCKER_CLI_EXPERIMENTAL=enabled docker buildx --platform linux/arm/v7 -t $DOCKER_USERNAME/flightfeeder:$TRAVIS_TAG .
 before_deploy:
   # List local docker images
   - docker images
@@ -25,7 +25,7 @@ before_deploy:
   - echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
 deploy:
   provider: script
-  script: docker push $DOCKER_USERNAME/flightfeeder:${TRAVIS_TAG}
+  script: docker push $DOCKER_USERNAME/flightfeeder:$TRAVIS_TAG
   on:
     tags: true
     all_branches: false
