@@ -210,7 +210,6 @@ RUN tar -xzf fr24feed_*_armhf.tgz && \
 
 # RBFEEDER
 WORKDIR /rbfeeder
-#ADD https://apt.rb24.com/pool/main/r/rbfeeder/rbfeeder_${RBFEEDER_VERSION}_armhf.deb /rbfeeder # Cloudflare ...
 RUN wget -U "Debian APT-HTTP/1.3" https://apt.rb24.com/pool/main/r/rbfeeder/rbfeeder_${RBFEEDER_VERSION}_armhf.deb && \
 	ar x rbfeeder_*_armhf.deb && \
 	rm rbfeeder_*_armhf.deb && \
@@ -220,7 +219,8 @@ RUN wget -U "Debian APT-HTTP/1.3" https://apt.rb24.com/pool/main/r/rbfeeder/rbfe
 	rm data.tar* && \
 	rm -r lib/ && \
 	rm -r etc/ && \
-	mv usr/bin/rbfeeder rbfeeder && \
+	ls -lah && \
+	mv usr/bin/rbfeeder/* . && \
 	mv usr/share/doc/* . && \
 	rm -r usr/
 
