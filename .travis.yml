@@ -16,7 +16,6 @@ before_install:
   # Print out Docker version
   - docker version
   # Create new Docker builder
-  - DOCKER_CLI_EXPERIMENTAL
   - docker buildx use pibuilder
   - docker buildx inspect --bootstrap
   - docker buildx ls
