@@ -1,0 +1,7 @@
+#!/usr/bin/with-contenv bash
+if [ "$SERVICE_ENABLE_RBFEEDER" != "false" ]
+then
+	/rbfeeder/rbfeeder
+else
+	tail -f /dev/null
+fi

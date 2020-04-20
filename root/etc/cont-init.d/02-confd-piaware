@@ -10,9 +10,6 @@ default_value()
 }
 
 default_value "feeder-id" "YOUR_FEEDER_ID"
-default_value "receiver-type" "other"
-default_value "receiver-host" "127.0.0.1"
-default_value "receiver-port" "30005"
 
 if [ ! -f /etc/piaware.conf ]; then
 	/opt/confd/bin/confd -onetime -confdir "/etc/confd/piaware" -prefix "piaware" -backend env

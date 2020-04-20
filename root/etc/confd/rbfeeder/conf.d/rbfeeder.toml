@@ -1,0 +1,6 @@
+[template]
+src = "rbfeeder.ini.tmpl"
+dest = "/etc/rbfeeder.ini"
+keys = [
+    "/"
+]

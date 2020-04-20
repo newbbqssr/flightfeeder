@@ -10,3 +10,13 @@
 {{- range gets "/*/dash/*/dash/*/dash/*" }}
 {{base (dir (dir (dir (dir (dir (dir .Key))))))}}-{{base (dir (dir (dir (dir .Key))))}}-{{base (dir (dir .Key))}}-{{base .Key }}="{{ .Value }}"
 {{- end }}
+receiver="beast-tcp"
+host="127.0.0.1:30005"
+bs="no"
+raw="no"
+logmode="1"
+logpath="/tmp"
+mlat="yes"
+mlat-without-gps="yes"
+use-http="yes"
+http-timeout="10"
