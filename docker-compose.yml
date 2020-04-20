@@ -1,11 +1,12 @@
 version: "3.7"
 services:
   fr24feed-piaware:
-    image: "thomasreiser/fr24feed-piaware"
+    image: "thomasreiser/flightfeeder"
     restart: unless-stopped
     environment: 
       - "FR24FEED_FR24KEY=MY_SHARING_KEY"
       - "PIAWARE_FEEDER_DASH_ID=MY_FEEDER_ID"
+      - "RBFEEDER_KEY=MY_SHARING_ID"
       - "HTML_SITE_LAT=MY_SITE_LAT"
       - "HTML_SITE_LON=MY_SITE_LON"
       - "HTML_SITE_NAME=MY_SITE_NAME"
@@ -13,8 +14,9 @@ services:
     devices:
       - "/dev/bus/usb"
     # ports
-    # 8754 - DUMP1090 server port
-    # 8080 - HTTP server port
+    # 30005 - DUMP1090 server port
+    # 8754  - FR24FEED server port
+    # 8080  - HTTP server port
     ports:
       - "8754:8754"
       - "8080:8080"

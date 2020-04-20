@@ -1,6 +1,9 @@
 MIT License
 
-Copyright (c) 2020 MAUGIN Thomas
+Copyright for portions of the project are held by Thomas Maugin, 2020 as part of
+the project https://github.com/Thom-x/docker-fr24feed-piaware-dump1090 where the
+code was forked from initially. All other copyright for project flighfeeder is
+held by Thomas Reiser, 2020.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

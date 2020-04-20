@@ -229,6 +229,9 @@ RUN tar xzf /tmp/s6-overlay-armhf.tar.gz -C / && \
 	rm /tmp/s6-overlay-armhf.tar.gz
 COPY /root /
 
+# CLEANUP
+RUN rm -r /tmp/*
+
 EXPOSE 8754 8080 30001 30002 30003 30004 30005 30104 
 
 ENTRYPOINT ["/init"]
