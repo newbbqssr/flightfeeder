@@ -34,4 +34,3 @@ deploy:
   script: docker push $DOCKER_USERNAME/flightfeeder:$TRAVIS_BRANCH
   on:
     tags: true
-    all_branches: false
