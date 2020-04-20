@@ -9,6 +9,7 @@ Feed FlightRadar24, FlightAware and RadarBox services and allow you to see the p
 ![Image of dump1090 webapp](https://raw.githubusercontent.com/thomasreiser/flightfeeder/master/screenshot.png)
 
 # Requirements
+- Raspberry Pi with Raspbian (tested with V4 Model B)
 - Docker
 - RTL-SDR DVBT USB Dongle (RTL2832)
 
@@ -49,7 +50,6 @@ To disable starting a service you can add an environment variable :
 
 Ex : `-e "SERVICE_ENABLE_HTTP=false"`
 
-
 ## FlightAware
 
 Register on https://flightaware.com/account/join/.
@@ -86,13 +86,11 @@ docker run -it --rm \
 	-e "SERVICE_ENABLE_RBFEEDER=false" \
 	thomasreiser/flightfeeder /bin/bash
 ```
-
 Then : `/fr24feed/fr24feed --signup` and follow the instructions, for technical steps, your answer doesn't matter we just need the sharing key at the end.
 
 Finally to see the sharing key run `cat /etc/fr24feed.ini`, you can now exit the container.
 
 Add the environment variable `FR24FEED_FR24KEY` with your sharing key.
-
 
 | Environment Variable                  | Configuration property   | Default value     |
 |---------------------------------------|--------------------------|-------------------|
@@ -113,10 +111,9 @@ docker run -it --rm \
 	thomasreiser/flightfeeder /bin/bash
 ```
 
-Then : `/rbfeeder/rbfeeder --showkey --nostart` and to get your new key. Use this key then to claim this station in your RadarBox account at https://www.radarbox.com/raspberry-pi/claim.
+Then : `/rbfeeder/rbfeeder` to do an initial startup which will also create a new key for you. Use this key then to claim this station in your RadarBox account at https://www.radarbox.com/raspberry-pi/claim.
 
 Add the environment variable `RBFEEDER_KEY` with your sharing key.
-
 
 | Environment Variable                  | Configuration property   | Default value     |
 |---------------------------------------|--------------------------|-------------------|
@@ -124,8 +121,7 @@ Add the environment variable `RBFEEDER_KEY` with your sharing key.
 
 Ex : `-e "RBFEEDER_KEY=0123456789"`
 
-
-### Terrain-limit rings (optional):
+## Terrain-limit rings (optional):
 If you don't need this feature ignore this.
 
 Create a panorama for your receiver location on http://www.heywhatsthat.com.
@@ -143,6 +139,6 @@ If you don't want to download the limit every time you bring up the container yo
 
 # Build it yourself
 
-Clone this repo.
+Clone this repository into your Raspberry Pi.
 
 ```docker build . ```
