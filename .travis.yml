@@ -16,9 +16,10 @@ before_install:
   # Print out Docker version
   - docker version
   # Create new Docker builder
+  - docker buildx create --name pibuilder
+  - docker buildx ls
   - docker buildx use pibuilder
   - docker buildx inspect --bootstrap
-  - docker buildx ls
 install:
   # Build Docker image
   - docker buildx --platform linux/arm/v7 -t $DOCKER_USERNAME/flightfeeder:$TRAVIS_TAG .
