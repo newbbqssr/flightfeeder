@@ -219,8 +219,7 @@ RUN wget -U "Debian APT-HTTP/1.3" https://apt.rb24.com/pool/main/r/rbfeeder/rbfe
 	rm data.tar* && \
 	rm -r lib/ && \
 	rm -r etc/ && \
-	ls -lah && \
-	mv usr/bin/rbfeeder/* . && \
+	mv usr/bin/* . && \
 	mv usr/share/doc/* . && \
 	rm -r usr/
 
