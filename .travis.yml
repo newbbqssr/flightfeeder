@@ -18,8 +18,8 @@ before_install:
   - docker buildx inspect --bootstrap
 install:
   - if [ -z "$TRAVIS_TAG" ] then
-      docker buildx build --platform linux/arm/v7 -t flightfeeder:$TRAVIS_BRANCH .
+      docker buildx build --platform linux/arm/v7 -t DOCKER_USERNAME/flightfeeder .
     else
       echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
-      docker buildx build --platform linux/arm/v7 -t flightfeeder:$TRAVIS_BRANCH --push .
+      docker buildx build --platform linux/arm/v7 -t $DOCKER_USERNAME/flightfeeder:$TRAVIS_TAG --push .
     fi
