@@ -164,24 +164,22 @@ RUN apt-get update -y && \
 	cmake \
 	build-essential \
 	# piaware
-	libboost-system-dev \
-	libboost-program-options-dev \
-	libboost-regex-dev \
-	libboost-filesystem-dev \
+	libboost-system1.67.0 \
+	libboost-program-options1.67.0 \
+	libboost-regex1.67.0 \
+	libboost-filesystem1.67.0 \
 	libtcl \
 	net-tools \
 	tclx \
 	tcl \
 	tcllib \
-	tcl-tls \
 	itcl3 \
-	librtlsdr-dev \
+	librtlsdr0 \
 	pkg-config \
-	libncurses5-dev \
-	libbladerf-dev \
+	libncurses5 \
+	libbladerf1 \
 	# rbfeeder
 	libjansson4 \
-	libncurses5 \
 	libtinfo5 && \
 	rm -rf /var/lib/apt/lists/*
 
