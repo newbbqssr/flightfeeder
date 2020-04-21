@@ -25,11 +25,10 @@ install:
   - echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
   # Build Docker image
   - docker buildx build --platform linux/arm/v7 -t flightfeeder:$TRAVIS_BRANCH .
-  # Inspect image
-  - docker buildx imagetools inspect flightfeeder:$TRAVIS_BRANCH
 deploy:
   provider: script
   # Deploy tag on Docker
   script: docker push flightfeeder:$TRAVIS_BRANCH
+  skip_cleanup: true
   on:
     tags: true
