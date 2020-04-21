@@ -87,7 +87,7 @@ docker run -it --rm \
 	-e "SERVICE_ENABLE_RBFEEDER=false" \
 	thomasreiser/flightfeeder /bin/bash
 ```
-Then : `/fr24feed/fr24feed --signup` and follow the instructions, for technical steps, your answer doesn't matter we just need the sharing key at the end.
+Then : `/opt/fr24feed/bin/fr24feed --signup` and follow the instructions, for technical steps, your answer doesn't matter we just need the sharing key at the end.
 
 Finally to see the sharing key run `cat /etc/fr24feed.ini`, you can now exit the container.
 
@@ -112,7 +112,7 @@ docker run -it --rm \
 	thomasreiser/flightfeeder /bin/bash
 ```
 
-Then : `/rbfeeder/rbfeeder` to do an initial startup which will also create a new key for you. Use this key then to claim this station in your RadarBox account at https://www.radarbox.com/raspberry-pi/claim.
+Then : `/opt/rbfeeder/bin/rbfeeder` to do an initial startup which will also create a new key for you. Use this key then to claim this station in your RadarBox account at https://www.radarbox.com/raspberry-pi/claim.
 
 Add the environment variable `RBFEEDER_KEY` with your sharing key.
 

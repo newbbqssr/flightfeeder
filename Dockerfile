@@ -7,6 +7,7 @@ FROM multiarch/debian-debootstrap:armhf-buster as dump1090
 
 ENV DUMP1090_VERSION v3.8.1
 
+WORKDIR /tmp
 RUN apt-get update -y && \
 	apt-get install -y \
 	sudo \
@@ -20,10 +21,39 @@ RUN apt-get update -y && \
 	libbladerf-dev && \
 	rm -rf /var/lib/apt/lists/*
 
-WORKDIR /tmp
 RUN git clone -b ${DUMP1090_VERSION} --depth 1 https://github.com/flightaware/dump1090 && \
 	cd dump1090 && \
 	make
+
+
+
+
+##################################################################
+##
+## TEMPORARY DOCKER IMAGE TO BUILD TCL-TLS
+##
+##################################################################
+FROM multiarch/debian-debootstrap:armhf-buster as tcltls
+
+ENV DEBIAN_VERSION buster
+
+WORKDIR /tmp
+RUN apt-get update -y && \
+	apt-get install -y \
+	sudo \
+	git-core \
+	build-essential \
+	debhelper \
+	libssl-dev \
+	tcl-dev \
+	chrpath && \
+	rm -rf /var/lib/apt/lists/*
+
+RUN git clone --depth 1 http://github.com/flightaware/tcltls-rebuild.git
+WORKDIR /tmp/tcltls-rebuild
+RUN ./prepare-build.sh ${DEBIAN_VERSION} && \
+	cd package-${DEBIAN_VERSION} && \
+	dpkg-buildpackage -b --no-sign
 
 
 
@@ -55,7 +85,6 @@ RUN apt-get update -y && \
 	net-tools \
 	tclx8.4 \
 	tcllib \
-	tcl-tls \
 	itcl3 \
 	python3-venv \
 	dh-systemd \
@@ -68,7 +97,9 @@ RUN apt-get update -y && \
 
 RUN git clone -b ${PIAWARE_VERSION} --depth 1 https://github.com/flightaware/piaware_builder.git piaware_builder
 WORKDIR /tmp/piaware_builder
-RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
+COPY --from=tcltls /tmp/tcltls-rebuild /tmp/piaware_builder
+RUN dpkg -i tcl-tls_*.deb && \
+	./sensible-build.sh ${DEBIAN_VERSION} && \
 	cd package-${DEBIAN_VERSION} && \
 	dpkg-buildpackage -b
 
@@ -90,7 +121,7 @@ RUN apt-get update -y && \
 	sudo \
 	git-core \
 	build-essential \
-  golang && \
+	golang && \
 	rm -rf /var/lib/apt/lists/*
 
 RUN git clone -b ${CONFD_VERSION} --depth 1 https://github.com/kelseyhightower/confd.git && \
@@ -148,10 +179,6 @@ RUN apt-get update -y && \
 	pkg-config \
 	libncurses5-dev \
 	libbladerf-dev \
-	# tcl-tls
-	libssl-dev \
-    tcl-dev \
-    chrpath \
 	# rbfeeder
 	libjansson4 \
 	libncurses5 \
@@ -174,43 +201,34 @@ RUN mkdir -p /etc/modprobe.d && \
 	ldconfig && \
 	rm -rf /tmp/rtl-sdr
 
-# TCL-TLS
-RUN cd /tmp && \
-    git clone --depth 1 http://github.com/flightaware/tcltls-rebuild.git && \
-    cd tcltls-rebuild && \
-    ./prepare-build.sh ${DEBIAN_VERSION} && \
-    cd package-${DEBIAN_VERSION} && \
-    dpkg-buildpackage -b --no-sign && \
-    cd ../ && \
-    dpkg -i tcl-tls_*.deb && \
-	rm tcl-tls_*.deb
-
 # DUMP1090
+WORKDIR /tmp
 RUN mkdir -p /usr/lib/fr24/public_html/data
 COPY --from=dump1090 /tmp/dump1090/dump1090 /usr/lib/fr24/
 COPY --from=dump1090 /tmp/dump1090/public_html /usr/lib/fr24/public_html
 RUN rm /usr/lib/fr24/public_html/config.js
 
 # PIAWARE
-COPY --from=piaware /tmp/piaware_builder /tmp/piaware_builder
-RUN cd /tmp/piaware_builder && \
+WORKDIR /tmp
+COPY --from=tcltls /tmp/tcltls-rebuild /tmp
+COPY --from=piaware /tmp/piaware_builder /tmp
+RUN dpkg -i tcl-tls_*.deb && \
 	dpkg -i piaware_*_*.deb && \
-	rm -rf /tmp/piaware && \
 	rm /etc/piaware.conf
 
 # CONFD
 COPY --from=confd /tmp/confd/bin/confd /opt/confd/bin/confd
 
 # FR24FEED
-WORKDIR /fr24feed
-ADD https://repo-feed.flightradar24.com/rpi_binaries/fr24feed_${FR24FEED_VERSION}_armhf.tgz /fr24feed
+WORKDIR /opt/fr24feed/bin
+ADD https://repo-feed.flightradar24.com/rpi_binaries/fr24feed_${FR24FEED_VERSION}_armhf.tgz /opt/fr24feed/bin
 RUN tar -xzf fr24feed_*_armhf.tgz && \
 	mv fr24feed_armhf/* . && \
 	rm -r fr24feed_armhf/ && \
 	rm fr24feed_*_armhf.tgz
 
 # RBFEEDER
-WORKDIR /rbfeeder
+WORKDIR /tmp
 RUN wget -U "Debian APT-HTTP/1.3" https://apt.rb24.com/pool/main/r/rbfeeder/rbfeeder_${RBFEEDER_VERSION}_armhf.deb && \
 	ar x rbfeeder_*_armhf.deb && \
 	rm rbfeeder_*_armhf.deb && \
@@ -220,7 +238,8 @@ RUN wget -U "Debian APT-HTTP/1.3" https://apt.rb24.com/pool/main/r/rbfeeder/rbfe
 	rm data.tar* && \
 	rm -r lib/ && \
 	rm -r etc/ && \
-	cp usr/bin/* /rbfeeder && \
+	mkdir -p /opt/rbfeeder/bin && \
+	cp usr/bin/* /opt/rbfeeder/bin && \
 	rm -r usr/
 
 # S6 OVERLAY
