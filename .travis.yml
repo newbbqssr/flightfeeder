@@ -5,30 +5,28 @@ notifications:
   email: false
 git:
   depth: 3
-before_install:
-  # Update Docker
-  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-  - sudo apt-get update
-  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce qemu-user
-  - export DOCKER_CLI_EXPERIMENTAL=enabled
-  - export DOCKER_BUILD_KIT=1
-  # Print out Docker version
-  - docker version
-  # Create new Docker builder
-  - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-  - docker buildx create --driver docker-container --use
-  - docker buildx ls
-  - docker buildx inspect --bootstrap
-install:
-  # Login to Docker
-  - echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
-  # Build Docker image
-  - docker buildx build --platform linux/arm/v7 -t flightfeeder:$TRAVIS_BRANCH .
-deploy:
-  provider: script
-  # Deploy tag on Docker
-  script: docker push flightfeeder:$TRAVIS_BRANCH
-  skip_cleanup: true
-  on:
-    tags: true
+jobs:
+  include:
+      - stage: Update Docker
+        script:
+          - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+          - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+          - sudo apt-get update -y
+          - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce qemu-user
+      - stage: Prepare Docker
+        script:
+          - export DOCKER_CLI_EXPERIMENTAL=enabled
+          - export DOCKER_BUILD_KIT=1
+          - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+          - docker buildx create --driver docker-container --use
+          - docker buildx ls
+          - docker buildx inspect --bootstrap
+      - stage: Build Docker image
+        script:
+          - docker buildx build --platform linux/arm/v7 -t $DOCKER_USERNAME/flightfeeder:$TRAVIS_BRANCH .
+        if: tag IS NOT present
+      - stage: Build and upload Docker image
+        script:
+          - echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
+          - docker buildx build --platform linux/arm/v7 -t $DOCKER_USERNAME/flightfeeder:$TRAVIS_BRANCH --push .
+        if: tag IS present
