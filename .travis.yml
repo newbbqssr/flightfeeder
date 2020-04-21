@@ -22,8 +22,8 @@ before_install:
   - docker buildx inspect --bootstrap
 install:
   # Build Docker image
-  - docker buildx build --platform linux/arm/v7 -t $DOCKER_USERNAME/flightfeeder:$TRAVIS_BRANCH .
-  - docker buildx imagetools inspect $DOCKER_USERNAME/flightfeeder:$TRAVIS_BRANCH
+  - docker buildx build --platform linux/arm/v7 -t flightfeeder:$TRAVIS_BRANCH .
+  - docker buildx imagetools inspect flightfeeder:$TRAVIS_BRANCH
 before_deploy:
   # List local Docker images
   - docker images
@@ -32,6 +32,6 @@ before_deploy:
 deploy:
   provider: script
   # Deploy tag on Docker
-  script: docker push $DOCKER_USERNAME/flightfeeder:$TRAVIS_BRANCH
+  script: docker push flightfeeder:$TRAVIS_BRANCH
   on:
     tags: true
