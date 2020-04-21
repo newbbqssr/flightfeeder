@@ -23,6 +23,7 @@ before_install:
 install:
   # Build Docker image
   - docker buildx build --platform linux/arm/v7 -t $DOCKER_USERNAME/flightfeeder:$TRAVIS_BRANCH .
+  - docker buildx imagetools inspect $DOCKER_USERNAME/flightfeeder:$TRAVIS_BRANCH
 before_deploy:
   # List local Docker images
   - docker images
