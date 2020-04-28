@@ -1,16 +1,5 @@
 #!/usr/bin/with-contenv bash
 
-default_value() 
-{ 
-	key=${1//\-/_DASH_}
-	key=RBFEEDER_${key^^}
-	eval "value=\${$key:-\$2}"
-	printf -v $key -- "$value"
-	export $key
-}
-
-default_value "key" ""
-
 if [ ! -f /etc/rbfeeder.ini ]; then
 	/opt/confd/bin/confd -onetime -confdir "/etc/confd/rbfeeder" -prefix "rbfeeder" -backend env
 fi

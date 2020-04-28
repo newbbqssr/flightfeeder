@@ -1,19 +1,20 @@
 #!/usr/bin/with-contenv bash
+
 if [ "$SERVICE_ENABLE_DUMP1090" != "false" ]
 then
 	default_value() 
 	{ 
 		key=${1//\-/_DASH_}
-		key=HTML_${key^^}
+		key=SITE_${key^^}
 		eval "value=\${$key:-\$2}"
 		printf -v $key -- "$value"
 		export $key
 	}
 
-	default_value "site_lat" "45.0"
-	default_value "site_lon" "9.0"
+	default_value "lat" "45.0"
+	default_value "lon" "9.0"
 
-	/usr/lib/fr24/dump1090 --net --mlat --write-json /usr/lib/fr24/public_html/data --raw --quiet --lat ${HTML_SITE_LAT} --lon ${HTML_SITE_LON} --gain -10
+	/opt/dump1090/bin/dump1090 --net --mlat --write-json /usr/lib/fr24/public_html/data --raw --quiet --lat ${SITE_LAT} --lon ${SITE_LON} --gain -10
 else
 	tail -f /dev/null
 fi

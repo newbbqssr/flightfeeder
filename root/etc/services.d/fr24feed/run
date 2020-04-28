@@ -1,4 +1,5 @@
 #!/usr/bin/with-contenv bash
+
 if [ "$SERVICE_ENABLE_FR24FEED" != "false" ]
 then
 	/opt/fr24feed/bin/fr24feed

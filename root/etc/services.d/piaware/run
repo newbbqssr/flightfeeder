@@ -1,4 +1,5 @@
 #!/usr/bin/with-contenv bash
+
 if [ "$SERVICE_ENABLE_PIAWARE" != "false" ]
 then
 	/usr/bin/piaware -plainlog

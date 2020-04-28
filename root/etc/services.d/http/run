@@ -1,4 +1,5 @@
 #!/usr/bin/with-contenv bash
+
 if [ "$SERVICE_ENABLE_HTTP" != "false" ]
 then
 	cd /usr/lib/fr24/public_html

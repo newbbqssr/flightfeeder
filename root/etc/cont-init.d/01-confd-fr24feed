@@ -1,16 +1,5 @@
 #!/usr/bin/with-contenv bash
 
-default_value() 
-{ 
-	key=${1//\-/_DASH_}
-	key=FR24FEED_${key^^}
-	eval "value=\${$key:-\$2}"
-	printf -v $key -- "$value"
-	export $key
-}
-
-default_value "fr24key" "YOUR_KEY_HERE"
-
 if [ ! -f /etc/fr24feed.ini ]; then
 	/opt/confd/bin/confd -onetime -confdir "/etc/confd/fr24feed" -prefix "fr24feed" -backend env
 fi
